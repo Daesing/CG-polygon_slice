@@ -118,7 +118,7 @@ void Mouse(int button, int state, int x, int y) {
 	}
 	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		line.line_flag = false; // 마우스 버튼에서 손을 떼면 선 그리기 비활성화
-		line_line(line.obj[0][0],line.obj[0][1],line.obj[1][0],line.obj[1][1],shape[0].obj_cord[0][0], shape[0].obj_cord[0][1], shape[0].obj_cord[1][0], shape[0].obj_cord[1][1])
+		line_line(line.obj[0][0], line.obj[0][1], line.obj[1][0], line.obj[1][1], shape[0].obj_cord[0][0], shape[0].obj_cord[0][1], shape[0].obj_cord[1][0], shape[0].obj_cord[1][1]);
 		glutPostRedisplay();
 	}
 }
