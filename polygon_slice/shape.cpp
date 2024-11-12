@@ -60,3 +60,14 @@ void Shape::move() {
 
 void Shape::is_split(Line line) {
 }
+
+void Shape::update_pos() {
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (j == 0)
+				obj_cord[i][j] = obj[i][j] + x_translation;
+			else if (j==1)
+				obj_cord[i][j] = obj[i][j] + y_translation;
+		}
+	}
+}

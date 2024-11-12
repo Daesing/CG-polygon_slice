@@ -114,10 +114,11 @@ void Mouse(int button, int state, int x, int y) {
 		line.line_flag = true; // 선 그리기를 활성화
 		glutPostRedisplay();
 
-		std::cout << "Fixed point set - x: " << line.obj[0][0] << ", y: " << line.obj[0][1] << '\n';
+		//std::cout << "Fixed point set - x: " << line.obj[0][0] << ", y: " << line.obj[0][1] << '\n';
 	}
 	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		line.line_flag = false; // 마우스 버튼에서 손을 떼면 선 그리기 비활성화
+		line_line(line.obj[0][0],line.obj[0][1],line.obj[1][0],line.obj[1][1],shape[0].obj_cord[0][0], shape[0].obj_cord[0][1], shape[0].obj_cord[1][0], shape[0].obj_cord[1][1])
 		glutPostRedisplay();
 	}
 }
@@ -128,7 +129,7 @@ void Motion(int x, int y) {
 		line.obj[1][0] = convert_x(x);
 		line.obj[1][1] = convert_y(y);
 
-		std::cout << "Moving - x: " << line.obj[1][0] << ", y: " << line.obj[1][1] << '\n';
+		//std::cout << "Moving - x: " << line.obj[1][0] << ", y: " << line.obj[1][1] << '\n';
 
 		glutPostRedisplay(); // 화면 다시 그리기 요청
 	}
@@ -155,6 +156,9 @@ void Keyboard(unsigned char key, int x, int y) {
 void TimerFunction(int value) {
 	switch (value) {
 	case 1:
+
+		shape[0].update_pos();
+		std::cout << "obj_cord_x: " << shape[0].obj_cord[0][0]<<'\n';
 
 		shape[0].move();
 		if(shape[0].x_translation > 2 || shape[0].x_translation < -2)

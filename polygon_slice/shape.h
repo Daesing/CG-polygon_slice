@@ -7,6 +7,8 @@ public:
 		{-0.2f,-0.2f,0.0f},{0.2f,-0.2f,0.0f},{-0.2f,0.2f,0.0f},{0.2f,0.2f,0.0f}
 	};
 
+	float obj_cord[4][3]{};
+
 	float color[4][3]{
 	{0,0,0},{0,0,0},{0,1,0},{0,1,0}
 	};
@@ -25,7 +27,7 @@ public:
 	void reset_shape(int,int);
 	void set_pos();
 	void is_split(Line line);
-
+	void update_pos();
 
 };
 
