@@ -12,14 +12,14 @@
 #include <gl/glm/gtc/matrix_transform.hpp>
 #include <gl/glm/gtc/type_ptr.hpp>
 #include <random>
-#include "split_shape.h"
+#include "basket.h"
 #include "shape.h"
 #include "func.h"
 #include "line.h"
 
 CONST INT WIDTH = 800;
 CONST INT HEIGHT = 600;
-CONST INT ARRAYSIZE = 5;
+CONST INT ARRAYSIZE = 3;
 
 extern std::random_device rd;
 extern std::default_random_engine dre;
@@ -29,7 +29,8 @@ extern std::uniform_real_distribution<float> urd_color;
 
 extern Shape shape[ARRAYSIZE];
 extern Line line;
-
+extern bool polygon_flag;
+extern int animation_speed;
 
 void make_vertexShaders();
 void make_fragmentShaders();

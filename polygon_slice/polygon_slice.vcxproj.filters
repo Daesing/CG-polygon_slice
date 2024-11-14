@@ -21,7 +21,7 @@
     <ClCompile Include="shape.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="split_shape.cpp">
+    <ClCompile Include="basket.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="func.cpp">
@@ -35,7 +35,7 @@
     <ClInclude Include="header.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="split_shape.h">
+    <ClInclude Include="basket.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="func.h">

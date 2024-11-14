@@ -130,14 +130,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="func.cpp" />
-    <ClCompile Include="split_shape.cpp" />
+    <ClCompile Include="basket.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="func.h" />
     <ClInclude Include="line.h" />
-    <ClInclude Include="split_shape.h" />
+    <ClInclude Include="basket.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="shape.h" />
   </ItemGroup>

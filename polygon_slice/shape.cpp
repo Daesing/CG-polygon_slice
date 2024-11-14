@@ -5,6 +5,7 @@
 
 void Shape::reset_shape(int shape_type_,int dir_)
 {
+	is_active = true;
 	shape_type = shape_type_;
 	dir = dir_;
 	set_pos();

@@ -14,8 +14,8 @@ public:
 	};
 
 	bool is_active{ true };
-	float x_translation{ 4 };
-	float y_translation{ -2 };
+	float x_translation{ 2 };
+	float y_translation{ -1 };
 
 	float vx{ 0.1 }, vy{ 0.05 };
 	int shape_type{};

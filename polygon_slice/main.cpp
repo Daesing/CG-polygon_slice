@@ -15,7 +15,9 @@ std::uniform_real_distribution<float> urd_color{ 0, 1 };
 
 Shape shape[ARRAYSIZE];
 Line line;
-
+Basket basket;
+bool polygon_flag = false;
+int animation_speed{ 80 };
 
 
 
@@ -37,7 +39,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutKeyboardFunc(Keyboard);
 	glutMouseFunc(Mouse);
 	glutMotionFunc(Motion);
-	glutTimerFunc(60, TimerFunction, 1);
+	glutTimerFunc(animation_speed, TimerFunction, 1);
 	glutMainLoop();
 }
 
@@ -51,24 +53,29 @@ GLvoid drawScene()
 
 	glEnable(GL_DEPTH_TEST);
 
+	if(polygon_flag)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	//--- 렌더링 파이프라인에 세이더 불러오기
 	glUseProgram(shaderProgramID);
 
 	glm::mat4 Tx0 = glm::mat4(1.0f);
 	glm::mat4 Tx1 = glm::mat4(1.0f);
-
-	glm::mat4 projection = glm::mat4(1.0f);
+	glm::mat4 Tx2 = glm::mat4(1.0f);
+	glm::mat4 Tx3 = glm::mat4(1.0f);
 
 	Tx1 =
 		glm::translate(Tx1, glm::vec3(shape[0].x_translation, 0.0, 0.0)) *
 		glm::translate(Tx1, glm::vec3(0.0, shape[0].y_translation, 0.0));
+	Tx2 =
+		glm::translate(Tx2, glm::vec3(shape[0].x_translation + 0.2, 0.0, 0.0)) *
+		glm::translate(Tx2, glm::vec3(0.0, shape[0].y_translation, 0.0));
 
-
-	//projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f); //--- 투영 공간 설정: [-100.0, 100.0]
-	//unsigned int projectionLocation = glGetUniformLocation(shaderProgramID, "projectionTransform"); //--- 투영 변환 값 설정
-	//glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
-
+	Tx3 =
+		glm::translate(Tx3, glm::vec3(basket.x_translation, 0.0, 0.0)) *
+		glm::translate(Tx3, glm::vec3(0.0, basket.y_translation, 0.0));
 
 	glBindVertexArray(vao);
 
@@ -84,16 +91,39 @@ GLvoid drawScene()
 		glDrawArrays(GL_LINES, 0, 2);
 	}
 
-	//--- 세이더 프로그램에서 modelTransform 변수 위치 가져오기
-	
-	
+		if (shape[0].is_active) {
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(Tx1));
+			glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->obj), &shape[0].obj);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->color), &shape[0].color);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
 
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(Tx1));
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->obj), &shape[0].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->color), &shape[0].color);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, shape[0].shape_type);
+
+
+		if (!shape[0].is_active) {
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(Tx1));
+			glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->obj), &shape[0].obj);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->color), &shape[0].color);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+
+			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(Tx2));
+			glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->obj), &shape[0].obj);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->color), &shape[0].color);
+			glDrawArrays(GL_TRIANGLE_STRIP, 1, 4);
+		}
+
+		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(Tx3));
+		glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->obj), &basket.obj);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shape->color), &basket.color);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 
 	glutSwapBuffers();
@@ -104,12 +134,10 @@ void Mouse(int button, int state, int x, int y) {
 		// 고정점을 현재 위치로 설정
 		line.obj[0][0] = convert_x(x);
 		line.obj[0][1] = convert_y(y);
-		line.obj[0][2] = 0;
 
 		// 끝점 초기화 (이동 시 변경됨)
 		line.obj[1][0] = line.obj[0][0];
 		line.obj[1][1] = line.obj[0][1];
-		line.obj[1][2] = 0;
 
 		line.line_flag = true; // 선 그리기를 활성화
 		glutPostRedisplay();
@@ -118,7 +146,8 @@ void Mouse(int button, int state, int x, int y) {
 	}
 	else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
 		line.line_flag = false; // 마우스 버튼에서 손을 떼면 선 그리기 비활성화
-		line_line(line.obj[0][0], line.obj[0][1], line.obj[1][0], line.obj[1][1], shape[0].obj_cord[0][0], shape[0].obj_cord[0][1], shape[0].obj_cord[1][0], shape[0].obj_cord[1][1]);
+			check_crushed(line, shape[0]);
+
 		glutPostRedisplay();
 	}
 }
@@ -138,8 +167,21 @@ void Motion(int x, int y) {
 void Keyboard(unsigned char key, int x, int y) {
 	switch (key)
 	{
+	case '+':
+		animation_speed -= 5;
+		break;
+	case '-':
+		animation_speed += 5;
+		break;
 	case 's':
-		shape[0].reset_shape(uid_shape(dre),uid_dir(dre));
+			shape[0].reset_shape(uid_shape(dre), uid_dir(dre));
+			shape[0].dir = uid_dir(dre);
+		break;
+	case 'm':
+		if (polygon_flag)
+			polygon_flag = false;
+		else
+			polygon_flag = true;
 		break;
 	case 'q':
 		glutLeaveMainLoop();
@@ -157,12 +199,21 @@ void TimerFunction(int value) {
 	switch (value) {
 	case 1:
 
-		shape[0].update_pos();
-		std::cout << "obj_cord_x: " << shape[0].obj_cord[0][0]<<'\n';
+		for (int i = 0; i < ARRAYSIZE; ++i)
+			shape[i].update_pos();
+		basket.move();
 
-		shape[0].move();
-		if(shape[0].x_translation > 2 || shape[0].x_translation < -2)
-			shape[0].reset_shape(uid_shape(dre), uid_dir(dre));
+			if (shape[0].is_active) {
+				shape[0].move();
+				if (shape[0].x_translation > 2 || shape[0].x_translation < -2)
+					shape[0].reset_shape(uid_shape(dre), uid_dir(dre));
+			}
+
+			if (!shape[0].is_active) {
+				shape[0].y_translation -= 0.1;
+				if (shape[0].y_translation < -1.5)
+					shape[0].reset_shape(uid_shape(dre), uid_dir(dre));
+			}
 
 		
 		break;
@@ -170,7 +221,7 @@ void TimerFunction(int value) {
 	}
 
 	glutPostRedisplay();
-	glutTimerFunc(60, TimerFunction, 1);
+	glutTimerFunc(animation_speed, TimerFunction, 1);
 }
 
 
